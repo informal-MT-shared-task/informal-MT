@@ -1,15 +1,16 @@
-# Evaluation
-sacrebleu>=2.4.0      # For official chrF++ scoring
+# --- Evaluation ---
+sacrebleu>=2.4.0      # Official chrF++ metric
 
-# LLM Inference & Frameworks
-transformers>=4.40.0  # For loading Latxa and Llama-based models
-torch>=2.2.0          # Backend for Latxa/LLM inference
-vllm>=0.4.0           # Recommended for high-throughput inference on 90 test instances
-litellm>=1.35.0       # Unified interface to switch between Qwen, Llama, and Latxa
+# --- Inference & Embeddings ---
+# Use LiteLLM to talk to Ollama (Inference) AND Ollama (Embeddings)
+litellm>=1.35.0
 
-# RAG & Similarity Search
+# --- Vector Store (RAG) ---
+faiss-cpu>=1.8.0
 
-
-# Utility & Connectivity
-pyyaml                # For the experiment_config.yaml structure
-tqdm                  # Progress bars
+# --- Data & Logic ---
+pandas>=2.0.0         # Essential for handling .jsonl and training data
+numpy>=1.24.0         # Needed for vector math with FAISS
+python-dotenv>=1.0.0  # Manages local paths/API keys without hardcoding
+pyyaml>=6.0.0         # For your experiment_config.yaml
+tqdm>=4.66.0          # Progress bars for the 90 test instances
