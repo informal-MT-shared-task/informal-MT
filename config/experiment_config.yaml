@@ -1,0 +1,34 @@
+data:
+  tsv_path: "data/dataset.tsv"
+
+one_step:
+  model: "latxa"          # "latxa" or "llama3"
+  ref_column: "ref_informal_eu"   # Sample field used as eval reference
+  generation:
+    max_new_tokens: 256
+    temperature: 0.1
+    do_sample: false
+
+multi_step:
+  step1:
+    model: "llama3"        # normalize informal ES → standard ES
+    generation:
+      max_new_tokens: 256
+      temperature: 0.1
+      do_sample: false
+
+  step2:
+    model: "latxa"         # translate standard ES → standard EU (Batua)
+    generation:
+      max_new_tokens: 256
+      temperature: 0.1
+      do_sample: false
+
+  step3:
+    model: "latxa"         # style inject standard EU → informal EU (few-shot)
+    generation:
+      max_new_tokens: 256
+      temperature: 0.1
+      do_sample: false
+
+  ref_column: "ref_informal_eu"   # Sample field used as final eval reference

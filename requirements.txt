@@ -9,7 +9,7 @@ litellm>=1.35.0
 faiss-cpu>=1.8.0
 
 # --- Data & Logic ---
-pandas>=2.0.0         # Essential for handling .jsonl and training data
+pandas>=2.0.0         # For handling .jsonl and training data
 numpy>=1.24.0         # Needed for vector math with FAISS
 python-dotenv>=1.0.0  # Manages local paths/API keys without hardcoding
 pyyaml>=6.0.0         # For your experiment_config.yaml

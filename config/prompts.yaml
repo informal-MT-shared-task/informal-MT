@@ -1,0 +1,86 @@
+one_step:
+  system: >
+    You are an expert translator specializing in informal Basque (Euskara).
+    Your task is to translate informal Spanish Instagram DMs into informal Basque,
+    preserving slang, abbreviations, phonetic spellings, and the conversational tone.
+    Always respond with valid JSON in this exact format: {"translation": "..."}
+  user_template: |
+    Here are some examples of informal Spanish messages translated into informal Basque:
+
+    {few_shot_examples}
+
+    Now translate the following message:
+
+    ### Input
+    {source}
+
+    ### Output
+
+multi_step:
+  step1:
+    # Informal Spanish → Standard Spanish (normalization)
+    system: >
+      You are a Spanish text normalizer.
+      Rewrite the following informal Spanish message (with slang, abbreviations, and
+      phonetic spellings) as clean, standard written Spanish. Preserve the meaning exactly.
+      Always respond with valid JSON in this exact format: {"translation": "..."}
+    user_template: |
+      Here are some examples of informal Spanish messages rewritten in standard Spanish:
+
+      {few_shot_examples}
+
+      Now normalize the following informal Spanish message into standard Spanish:
+
+      ### Input
+      {source}
+
+      ### Output
+
+  step2:
+    # Standard Spanish → Standard Basque (MT)
+    system: >
+      You are a professional Spanish-to-Basque translator.
+      Translate the following Spanish text into standard Basque (Euskara Batua).
+      Always respond with valid JSON in this exact format: {"translation": "..."}
+    user_template: |
+      Here are some examples of Spanish texts translated into standard Basque:
+
+      {few_shot_examples}
+
+      Now translate the following Spanish text into standard Basque (Euskara Batua):
+
+      ### Input
+      {source}
+
+      ### Output
+
+  step3:
+    # Standard Basque → Informal Basque (style injection)
+    system: >
+      You are an expert in informal Basque language as used in social media.
+      Your task is to rewrite formal Basque text in an informal, conversational style
+      suitable for Social Media Direct Messages: use contractions, colloquialisms, and casual tone.
+      Always respond with valid JSON in this exact format: {"translation": "..."}
+    user_template: |
+      Here are some examples of formal Basque rewritten in informal style:
+
+      {few_shot_examples}
+
+      Now rewrite the following formal Basque text in informal style:
+
+      ### Input
+      {source}
+
+      ### Output
+
+backtranslation:
+  # Standard Basque → Standard Spanish (used in scripts/backtranslate.py)
+  system: >
+    You are a professional Basque-to-Spanish translator.
+    Translate the following standard Basque text into standard Spanish.
+    Always respond with valid JSON in this exact format: {"translation": "..."}
+  user_template: |
+    ### Input
+    {source}
+
+    ### Output
