@@ -1,0 +1,15 @@
+# Evaluation
+sacrebleu>=2.4.0      # For official chrF++ scoring
+
+# LLM Inference & Frameworks
+transformers>=4.40.0  # For loading Latxa and Llama-based models
+torch>=2.2.0          # Backend for Latxa/LLM inference
+vllm>=0.4.0           # Recommended for high-throughput inference on 90 test instances
+litellm>=1.35.0       # Unified interface to switch between Qwen, Llama, and Latxa
+
+# RAG & Similarity Search
+
+
+# Utility & Connectivity
+pyyaml                # For the experiment_config.yaml structure
+tqdm                  # Progress bars
