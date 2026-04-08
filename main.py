@@ -59,12 +59,17 @@ def run_one_step(exp_cfg: dict, prompts_cfg: dict, k: int):
     else:
         tokenizer, model = load_llama3()
 
-    # TODO: when retriever is ready, replace these with real examples and a real encoder
-    # examples_step0 = [{"input": ..., "output": ...}, ...]
-    # encoder = SentenceTransformer("paraphrase-multilingual-mpnet-base-v2")
-    # index_step0 = build_index(examples_step0, encoder)
-    # retriever_fn_step0 = lambda query, k: retrieve(query, k, index_step0, examples_step0, encoder)
-    retriever_fn_step0 = lambda query, k: []  # placeholder — returns no examples until RAG is ready
+    # TODO: replace with real RAG retriever once build_index/retrieve are implemented
+    # Hardcoded dev examples — diverse set covering phonetic elongation, abbreviations,
+    # code-switching, informal terms, and laughter particles
+    dev_examples = [
+        {"input": "siiiiiiiiii hasta el 31...",                        "output": "Baiiii 31arte..."},
+        {"input": "yo tb ehh!! y alli no puedes ir a un psicologo?",   "output": "Nik ere eee!! Ta han ezin duzu psikologorik ikusi?"},
+        {"input": "bon en octubre nos tomamos algo!",                  "output": "Bon urrian trago bat edaten dugu!"},
+        {"input": "gracias cari",                                      "output": "Milesker maitia"},
+        {"input": "me ha invitado y no podia decirle q no jajaja",     "output": "Gomitatu nau ta ezin nion ezetz esan jajaja"},
+    ]
+    retriever_fn_step0 = lambda query, k: dev_examples[:k]
 
     pipeline = InformalSpanishToInformalBasque(tokenizer, model, retriever_fn_step0, cfg, prompts_cfg)
 
