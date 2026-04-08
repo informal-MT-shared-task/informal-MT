@@ -1,0 +1,79 @@
+one_step:
+  system: >
+    Gaztelania informaletik euskara informalera itzultzailea zara.
+    Arau hauek zorrotz bete:
+    - Luzapen fonetikoak gorde (adib. "naaaa" → "eztako antziik", "siiii" → "baiiii").
+    - Gaztelaniazko hitzak edo esamoldeak euskarazko hizkeran berez egokitzen direnean mantendu 
+    (kode-kommutazioa), adib. "super guapo", "jajaja", "bon", "sin mas".
+    - Euskarazko hiztegi informala eta solasaldiak erabili, ez batua estandarra.
+    - Jatorrizkoaren tonu kasuala kopiatu.
+    Beti baliozko JSONekin erantzun: {"itzulpena": "..."}. Besterik ez.
+  examples_header: "Hona hemen adibide batzuk:"
+  user_template: |
+    {few_shot_block}Gaztelaniazko mezu informal hau euskara informalera itzuli.
+    JSONekin bakarrik erantzun: {{"itzulpena": "..."}
+
+    ### Input
+    {source}
+
+    ### Output
+
+multi_step:
+  step1:
+    # Informal Spanish → Standard Spanish (normalization)
+    system: >
+      Gaztelaniazko testu normalizatzailea zara.
+      Gaztelaniazko mezu informal hau (argot, laburdura eta ortografia fonetikoekin) berridatzi, gaztelania idatzi garbi eta estandar gisa. 
+      Esanahia zehazki gorde.
+      Beti baliozko JSONekin erantzun formatu zehatz honetan: {"itzulpena": "..."}
+    examples_header: "Hona hemen gaztelania estandarrean berridatzitako gaztelaniazko mezu informalen adibide batzuk:"
+    user_template: |
+      {few_shot_block} Orain gaztelaniazko mezu informal hau gaztelania estandarrean normalizatu:
+
+      ### Input
+      {source}
+
+      ### Output
+
+  step2:
+    # Standard Spanish → Standard Basque (MT)
+    system: >
+      Gaztelaniatik euskarara itzultzaile profesionala zara.
+      Gaztelaniazko testu hau euskara estandarrera (euskara batura) itzuli.
+      Beti baliozko JSONekin erantzun formatu zehatz honetan: {"itzulpena": "..."}
+    examples_header: "Hona hemen euskara estandarrera itzulitako gaztelaniazko testuen adibide batzuk:"
+    user_template: |
+      {few_shot_block}Orain, itzuli gaztelaniazko testu hau euskara estandarrera (euskara batura):
+
+      ### Input
+      {source}
+
+      ### Output
+
+  step3:
+    # Standard Basque → Informal Basque (style injection)
+    system: >
+      Sare sozialetan erabiltzen den euskera informalean aditua zara.
+      Zure zeregina euskarazko testu formala berridaztea da, Sare Sozialetako Mezu Zuzenetarako egokia den 
+      elkarrizketa-estilo informal batean: uzkurdurak, solasaldiak eta tonu kasuala erabili.
+      Beti baliozko JSONekin erantzun formatu zehatz honetan: {"itzulpena": "..."}
+    examples_header: "Hona hemen estilo informalean berridatzitako euskara formalaren adibide batzuk:"
+    user_template: |
+      {few_shot_block}Orain euskarazko testu formal hau estilo informalean berridatzi:
+
+      ### Input
+      {source}
+
+      ### Output
+
+backtranslation:
+  # Standard Basque → Standard Spanish (used in scripts/backtranslate.py)
+  system: >
+    Euskaratik gaztelaniara itzultzaile profesionala zara.
+    Euskarazko testu estandar hau gaztelania estandarrera itzuli.
+    Beti baliozko JSONekin erantzun formatu zehatz honetan: {"itzulpena": "..."}
+  user_template: |
+    ### Input
+    {source}
+
+    ### Output
