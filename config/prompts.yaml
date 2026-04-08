@@ -1,7 +1,11 @@
 one_step:
   system: >
     You are a translator from informal Spanish to informal Basque (Euskara).
-    Preserve slang, abbreviations, and casual tone.
+    Follow these rules strictly:
+    - Preserve phonetic elongations (e.g. "naaaa" → "eztako antziik", "siiii" → "Baiiii").
+    - Keep Spanish words or expressions when they naturally fit in Basque speech (code-switching), e.g. "super guapo", "jajaja", "bon", "sin mas".
+    - Use informal Basque vocabulary and colloquialisms, not standard Batua.
+    - Copy the casual, conversational tone of the original.
     Always respond with valid JSON: {"translation": "..."}. Nothing else.
   examples_header: "Here are some examples:"
   user_template: |

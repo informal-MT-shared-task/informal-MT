@@ -76,6 +76,17 @@ def run_one_step(exp_cfg: dict, prompts_cfg: dict, k: int):
         {"input": "rarooooooo",                                        "output": "Arrarooaaa"},
         # dialect features
         {"input": "clarooo tia jo pero yo debajo prq no puedes poner las piernas rectas...", "output": "Caroo txoo baie neu behien ze ezinzuz rekto imini hankak..."},
+        # code-switching + phonetic (from train)
+        {"input": "El lunes tenemos q hacer terapia q estoy fatall",                         "output": "Astelehenenn terapia in behar deuu que estoy fatall"},
+        {"input": "ella tampoco las tiene rectas eh",                                         "output": "Berak be eztakoz rektoo"},
+        {"input": "sii fijo en alguna fiesta",                                                "output": "Baai, jairen baten fijoo"},
+        {"input": "madreeeee asii",                                                           "output": "Aiamaaa asii"},
+        {"input": "a ver si le conocemos en alguna juerga",                                   "output": "Abeer juerganbaten ezautzen deun"},
+        {"input": "ajjajaja ya ya tampoco tengo tan mal gusto jajajaj",                       "output": "Ajjajaja ya ya....  Eztakot hain gusto txarra jajajaj"},
+        {"input": "buenooo... tus gustos...",                                                 "output": "Buenooo.... zure gustok..."},
+        {"input": "no t pasesssss",                                                           "output": "ez pasaa"},
+        {"input": "anda ya pelmada!! Lo de mañana es gratis?",                               "output": "Bai zera pelmada!! Doan da biharkoa?"},
+        {"input": "ei a londres otra vez?? joe q bien viven algunos",                         "output": "E Londresera berriro??joe q bien viven algunos"},
     ]
     retriever_fn_step0 = lambda query, k: dev_examples[:k]
 
