@@ -24,14 +24,14 @@ def load_tsv(path: str | Path) -> list[Sample]:
     samples = []
     for _, row in df.iterrows():
         samples.append(Sample(
-            source_es=str(row.get("source-ISMD-Spanish", "")).strip(),
-            ref_informal_eu=str(row.get("Ref-ISMD-Basque(ORIGINAL)", "")).strip(),
-            ref_formal_eu=str(row.get("Ref-Batua-Basque", "")).strip(),
-            codeswitching=str(row.get("codeswitching", "")).strip(),
-            informal_lexical_item=str(row.get("informal lexical item", "")).strip(),
+            source_es=str(row.get("source_es", "")).strip(),
+            ref_informal_eu=str(row.get("ref_informal", "")).strip(),
+            ref_formal_eu=str(row.get("ref_batua", "")).strip(),
+            codeswitching=str(row.get("cs", "")).strip(),
+            informal_lexical_item=str(row.get("informal_lex", "")).strip(),
             dialect=str(row.get("dialect", "")).strip(),
-            phonetic_stylization=str(row.get("phonetic stylization", "")).strip(),
-            indexical_density=str(row.get("Indexical Density", "")).strip(),
+            phonetic_stylization=str(row.get("phonetic", "")).strip(),
+            indexical_density=str(row.get("density", "")).strip(),
         ))
     return samples
 
