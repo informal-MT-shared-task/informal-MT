@@ -1,16 +1,43 @@
+# ============================================================
+# PyTorch — install manually BEFORE pip install -r requirements.txt
+# because the right variant depends on your hardware:
+#
+#   Mac (Apple Silicon / CPU):
+#       pip install torch>=2.0.0
+#
+#   Linux (CUDA 12.1):
+#       pip install torch>=2.0.0 --index-url https://download.pytorch.org/whl/cu121
+#
+#   Linux (CUDA 11.8):
+#       pip install torch>=2.0.0 --index-url https://download.pytorch.org/whl/cu118
+#
+#   Linux / Colab (CPU only):
+#       pip install torch>=2.0.0 --index-url https://download.pytorch.org/whl/cpu
+#
+# bitsandbytes — CUDA Linux / Colab only (4-bit quantization):
+#   Install separately AFTER torch on Linux/Colab:
+#       pip install bitsandbytes>=0.43.0
+#   Skip entirely on Mac — the code loads models in bfloat16 without quantization.
+# ============================================================
+
+# --- Model inference (HuggingFace) ---
+transformers>=4.40.0
+accelerate>=0.29.0          # Required by transformers for device_map="auto"
+huggingface_hub>=0.23.0     # Model download/caching (pulled in by transformers, pinned for stability)
+
+# --- Embeddings (RAG retrieval) ---
+sentence-transformers>=3.0.0  # Multilingual encoder (paraphrase-multilingual-mpnet-base-v2)
+
 # --- Evaluation ---
-sacrebleu>=2.4.0      # Official chrF++ metric
+sacrebleu>=2.4.0            # chrF++ metric
 
-# --- Inference & Embeddings ---
-# Use LiteLLM to talk to Ollama (Inference) AND Ollama (Embeddings)
-litellm>=1.35.0
+# --- Vector store (RAG) ---
+faiss-cpu>=1.8.0            # CPU build — works on Mac, Linux, and Colab
+                            # On a CUDA Linux server you can swap for faiss-gpu
 
-# --- Vector Store (RAG) ---
-faiss-cpu>=1.8.0
-
-# --- Data & Logic ---
-pandas>=2.0.0         # For handling .jsonl and training data
-numpy>=1.24.0         # Needed for vector math with FAISS
-python-dotenv>=1.0.0  # Manages local paths/API keys without hardcoding
-pyyaml>=6.0.0         # For your experiment_config.yaml
-tqdm>=4.66.0          # Progress bars for the 90 test instances
+# --- Data & utilities ---
+pandas>=2.0.0
+numpy>=1.24.0
+pyyaml>=6.0.0
+tqdm>=4.66.0
+python-dotenv>=1.0.0
