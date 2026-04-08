@@ -18,7 +18,7 @@ BNB_CONFIG = BitsAndBytesConfig(
 )
 
 LLAMA3_MODEL_ID = "meta-llama/Meta-Llama-3-8B-Instruct"
-LATXA_MODEL_ID  = "HiTZ/latxa-7b-v1.2"
+LATXA_MODEL_ID  = "HiTZ/latxa-13b-v1.2"
 
 
 def load_model(model_id: str, quantize: bool = True):
