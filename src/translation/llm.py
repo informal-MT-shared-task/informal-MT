@@ -27,6 +27,8 @@ def load_model(model_id: str, quantize: bool = True):
     """
     tokenizer = AutoTokenizer.from_pretrained(model_id)
 
+    tokenizer.chat_template = "instruct"
+
     model = AutoModelForCausalLM.from_pretrained(
         model_id,
         quantization_config=BNB_CONFIG if quantize else None,
