@@ -12,7 +12,6 @@ one_step:
     {source}
 
     ### Output
-    {{"translation": "
 
 multi_step:
   step1:
