@@ -17,8 +17,8 @@ BNB_CONFIG = BitsAndBytesConfig(
     bnb_4bit_compute_dtype=torch.bfloat16,
 )
 
-LLAMA3_MODEL_ID  = "meta-llama/Meta-Llama-3-70B-Instruct"
-LATXA_MODEL_ID   = "HiTZ/latxa-70b-v1.2"
+LLAMA3_MODEL_ID = "meta-llama/Meta-Llama-3-8B-Instruct"
+LATXA_MODEL_ID  = "HiTZ/latxa-7b-v1.2"
 
 
 def load_model(model_id: str, quantize: bool = True):
