@@ -2,7 +2,7 @@
 
 Few-shot MT pipeline for translating informal Spanish into informal Basque, using Latxa and Llama 3.
 
-Two approaches are implemented: a direct one-step translation, and a multi-step pipeline that normalizes the Spanish first, translates to standard Basque, then injects informal style. Both use RAG-based few-shot retrieval (currently stubbed out — see below).
+Two approaches are implemented: a direct one-step translation, and a multi-step pipeline that normalizes the Spanish first, translates to standard Basque, then injects informal style. Both use RAG-based few-shot retrieval (currently not implemented yet! see below).
 
 ---
 
