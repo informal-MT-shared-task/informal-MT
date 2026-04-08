@@ -73,8 +73,6 @@ def run_one_step(exp_cfg: dict, prompts_cfg: dict, k: int):
 
     hypotheses = translate_batch(source_texts, pipeline.translate_informal_spanish_to_informal_basque, k)
 
-    print(f"DEBUG: {len(hypotheses)} hypotheses, {len(references)} references")
-    print(f"DEBUG: first hypothesis repr: {repr(hypotheses[0])}")
     save_outputs(hypotheses, references, "one_step", k, OUTPUTS_DIR)
     score = evaluate_file(str(OUTPUTS_DIR / f"one_step_{k}-shot_hypotheses.txt"), str(OUTPUTS_DIR / "references.txt"))
     (OUTPUTS_DIR / f"one_step_{k}-shot_scores.json").write_text(

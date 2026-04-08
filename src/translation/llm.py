@@ -27,7 +27,19 @@ def load_model(model_id: str, quantize: bool = True):
     """
     tokenizer = AutoTokenizer.from_pretrained(model_id)
 
-    tokenizer.chat_template = "instruct"
+    if not tokenizer.chat_template:
+        # Latxa has no chat template — use Llama 2 instruction format
+        tokenizer.chat_template = (
+            "{% if messages[0]['role'] == 'system' %}"
+            "{% set system_message = messages[0]['content'] %}{% set messages = messages[1:] %}"
+            "{% else %}{% set system_message = '' %}{% endif %}"
+            "{% for message in messages %}"
+            "{% if message['role'] == 'user' %}"
+            "{{ '<s>[INST] ' + (('<<SYS>>\n' + system_message + '\n<</SYS>>\n\n') if loop.first else '') + message['content'] + ' [/INST]' }}"
+            "{% elif message['role'] == 'assistant' %}"
+            "{{ ' ' + message['content'] + ' </s>' }}"
+            "{% endif %}{% endfor %}"
+        )
 
     model = AutoModelForCausalLM.from_pretrained(
         model_id,
