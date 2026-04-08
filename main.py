@@ -19,25 +19,11 @@ from src.translation.pipeline import InformalSpanishToInformalBasque, MultiStepA
 from src.translation.llm import load_latxa, load_llama3
 from src.evaluation.metrics import evaluate_file
 from src.rag.retriever import build_index, retrieve
+from utils import load_configs, save_outputs
 
 OUTPUTS_DIR = Path("outputs")
 PROMPTS_YAML = Path("config/prompts.yaml")
 EXPERIMENT_CONFIG_YAML = Path("config/experiment_config.yaml")
-
-
-def load_configs(config_path: str):
-    with open(config_path) as f:
-        exp_cfg = yaml.safe_load(f)
-    with open(PROMPTS_YAML) as f:
-        prompts_cfg = yaml.safe_load(f)
-    return exp_cfg, prompts_cfg
-
-
-def save_outputs(hypotheses: list[str], references: list[str], run_name: str):
-    out_dir = OUTPUTS_DIR / run_name
-    out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / "hypotheses.txt").write_text("\n".join(hypotheses), encoding="utf-8")
-    (out_dir / "references.txt").write_text("\n".join(references), encoding="utf-8")
 
 
 def run_eval_only(run_name: str):
@@ -81,7 +67,7 @@ def run_one_step(exp_cfg: dict, prompts_cfg: dict, run_name: str, k: int):
 
     hypotheses = translate_batch(source_texts, pipeline.translate_informal_spanish_to_informal_basque, k)
 
-    save_outputs(hypotheses, references, run_name)
+    save_outputs(hypotheses, references, run_name, OUTPUTS_DIR)
     out_dir = OUTPUTS_DIR / run_name
     score = evaluate_file(str(out_dir / "hypotheses.txt"), str(out_dir / "references.txt"))
     (out_dir / "scores.json").write_text(
@@ -120,7 +106,7 @@ def run_multi_step(exp_cfg: dict, prompts_cfg: dict, run_name: str, k: int):
 
     hypotheses = translate_batch(source_texts, pipeline.translate_multi_step, k)
 
-    save_outputs(hypotheses, references, run_name)
+    save_outputs(hypotheses, references, run_name, OUTPUTS_DIR)
     out_dir = OUTPUTS_DIR / run_name
     score = evaluate_file(str(out_dir / "hypotheses.txt"), str(out_dir / "references.txt"))
     (out_dir / "scores.json").write_text(
@@ -148,7 +134,7 @@ def main():
         run_eval_only(run_name)
         return
 
-    exp_cfg, prompts_cfg = load_configs(args.config)
+    exp_cfg, prompts_cfg = load_configs(args.config, PROMPTS_YAML)
 
     if args.approach == "one_step":
         run_one_step(exp_cfg, prompts_cfg, run_name, args.k)
