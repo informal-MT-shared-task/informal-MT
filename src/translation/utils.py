@@ -71,8 +71,7 @@ def build_prompt(tokenizer, system, user_template: str, source_text: str,
     return prompt + '{"translation": "'
 
 def generate(tokenizer, model, prompt: str, max_new_tokens: int = 256,
-             temperature: float = 0.1, do_sample: bool = False,
-             repetition_penalty: float = 1.3) -> str:
+             temperature: float = 0.1, do_sample: bool = False) -> str:
     """Run the model on `prompt` and return only the newly generated text."""
     inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
     input_len = inputs.input_ids.shape[1]
@@ -84,7 +83,6 @@ def generate(tokenizer, model, prompt: str, max_new_tokens: int = 256,
             temperature=temperature if do_sample else None,
             do_sample=do_sample,
             pad_token_id=tokenizer.eos_token_id,
-            repetition_penalty=repetition_penalty,
         )
 
     new_tokens = output_ids[0][input_len:]
@@ -123,7 +121,6 @@ def translate(source_text: str, k: int, retriever_fn, tokenizer, prompt_config: 
         max_new_tokens=gen_config.get("max_new_tokens", 256),
         temperature=gen_config.get("temperature", 0.1),
         do_sample=gen_config.get("do_sample", False),
-        repetition_penalty=gen_config.get("repetition_penalty", 1.3),
     )
     return parse_output(raw)
 
