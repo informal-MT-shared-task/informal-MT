@@ -89,9 +89,19 @@ def generate(tokenizer, model, prompt: str, max_new_tokens: int = 256,
 
 def parse_output(raw: str) -> str:
     """Extract the translation from the model's JSON output.
-    Falls back to the raw string if the model doesn't follow the format."""
+    Handles both full JSON responses and continuations (when the prompt already
+    starts with '{"translation": "' and the model just completes the string).
+    Falls back to the raw string if parsing fails."""
     try:
         return json.loads(raw)["translation"]
+    except Exception:
+        pass
+    # Try treating raw as the completion of '{"translation": "'
+    try:
+        completed = '{"translation": "' + raw
+        # Find the closing quote+brace, ignoring anything after
+        end = completed.index('"}')
+        return json.loads(completed[:end + 2])["translation"]
     except Exception:
         return raw.strip()
 
