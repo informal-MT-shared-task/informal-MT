@@ -68,6 +68,14 @@ def run_one_step(exp_cfg: dict, prompts_cfg: dict, k: int):
         {"input": "bon en octubre nos tomamos algo!",                  "output": "Bon urrian trago bat edaten dugu!"},
         {"input": "gracias cari",                                      "output": "Milesker maitia"},
         {"input": "me ha invitado y no podia decirle q no jajaja",     "output": "Gomitatu nau ta ezin nion ezetz esan jajaja"},
+        # code-switching preserved
+        {"input": "he cotilleado y ahora esta super guapooo",          "output": "Cotillie dot, orain super guapue daaa"},
+        {"input": "me lo he encontradooo es muy top",                  "output": "Topaa doott  es muuuy top"},
+        # phonetic elongation
+        {"input": "ensegidaaaaaaaaaaaa",                               "output": "Lasteer lasteerr"},
+        {"input": "rarooooooo",                                        "output": "Arrarooaaa"},
+        # dialect features
+        {"input": "clarooo tia jo pero yo debajo prq no puedes poner las piernas rectas...", "output": "Caroo txoo baie neu behien ze ezinzuz rekto imini hankak..."},
     ]
     retriever_fn_step0 = lambda query, k: dev_examples[:k]
 
