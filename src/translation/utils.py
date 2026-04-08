@@ -109,19 +109,13 @@ def parse_output(raw: str) -> str:
 
 _prompt_printed = False
 
-_prompt_printed = False
-
 def translate(source_text: str, k: int, retriever_fn, tokenizer, prompt_config: dict, gen_config, model) -> str:
-    global _prompt_printed
     examples = retriever_fn(source_text, k)
     system = prompt_config["system"]
     user_template = prompt_config["user_template"]
     examples_header = prompt_config.get("examples_header", "")
 
     prompt = build_prompt(tokenizer, system, user_template, source_text, examples, examples_header)
-    if not _prompt_printed:
-        print(f"DEBUG prompt:\n{prompt}\n--- END PROMPT ---")
-        _prompt_printed = True
     raw = generate(
         tokenizer, model, prompt,
         max_new_tokens=gen_config.get("max_new_tokens", 256),

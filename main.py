@@ -63,30 +63,33 @@ def run_one_step(exp_cfg: dict, prompts_cfg: dict, k: int):
     # Hardcoded dev examples — diverse set covering phonetic elongation, abbreviations,
     # code-switching, informal terms, and laughter particles
     dev_examples = [
-        {"input": "siiiiiiiiii hasta el 31...",                        "output": "Baiiii 31arte..."},
-        {"input": "yo tb ehh!! y alli no puedes ir a un psicologo?",   "output": "Nik ere eee!! Ta han ezin duzu psikologorik ikusi?"},
-        {"input": "bon en octubre nos tomamos algo!",                  "output": "Bon urrian trago bat edaten dugu!"},
-        {"input": "gracias cari",                                      "output": "Milesker maitia"},
-        {"input": "me ha invitado y no podia decirle q no jajaja",     "output": "Gomitatu nau ta ezin nion ezetz esan jajaja"},
-        # code-switching preserved
-        {"input": "he cotilleado y ahora esta super guapooo",          "output": "Cotillie dot, orain super guapue daaa"},
-        {"input": "me lo he encontradooo es muy top",                  "output": "Topaa doott  es muuuy top"},
         # phonetic elongation
-        {"input": "ensegidaaaaaaaaaaaa",                               "output": "Lasteer lasteerr"},
-        {"input": "rarooooooo",                                        "output": "Arrarooaaa"},
-        # dialect features
-        {"input": "clarooo tia jo pero yo debajo prq no puedes poner las piernas rectas...", "output": "Caroo txoo baie neu behien ze ezinzuz rekto imini hankak..."},
-        # code-switching + phonetic (from train)
-        {"input": "El lunes tenemos q hacer terapia q estoy fatall",                         "output": "Astelehenenn terapia in behar deuu que estoy fatall"},
-        {"input": "ella tampoco las tiene rectas eh",                                         "output": "Berak be eztakoz rektoo"},
-        {"input": "sii fijo en alguna fiesta",                                                "output": "Baai, jairen baten fijoo"},
+        {"input": "siiiiiiiiii hasta el 31...",                                               "output": "Baiiii 31arte..."},
+        {"input": "ensegidaaaaaaaaaaaa",                                                      "output": "Lasteer lasteerr"},
+        {"input": "rarooooooo",                                                               "output": "Arrarooaaa"},
         {"input": "madreeeee asii",                                                           "output": "Aiamaaa asii"},
+        # abbreviations
+        {"input": "yo tb ehh!! y alli no puedes ir a un psicologo?",                         "output": "Nik ere eee!! Ta han ezin duzu psikologorik ikusi?"},
+        {"input": "no t pasesssss",                                                           "output": "ez pasaa"},
+        # code-switching — Spanish words kept as-is
+        {"input": "bon en octubre nos tomamos algo!",                                         "output": "Bon urrian trago bat edaten dugu!"},
+        {"input": "me ha invitado y no podia decirle q no jajaja",                            "output": "Gomitatu nau ta ezin nion ezetz esan jajaja"},
+        {"input": "El lunes tenemos q hacer terapia q estoy fatall",                          "output": "Astelehenenn terapia in behar deuu que estoy fatall"},
+        {"input": "ei a londres otra vez?? joe q bien viven algunos",                         "output": "E Londresera berriro??joe q bien viven algunos"},
+        # code-switching + phonetic combined
+        {"input": "he cotilleado y ahora esta super guapooo",                                 "output": "Cotillie dot, orain super guapue daaa"},
+        {"input": "sii fijo en alguna fiesta",                                                "output": "Baai, jairen baten fijoo"},
+        # informal lexic
+        {"input": "gracias cari",                                                             "output": "Milesker maitia"},
+        {"input": "anda ya pelmada!! Lo de mañana es gratis?",                               "output": "Bai zera pelmada!! Doan da biharkoa?"},
+        # dialect + phonetic
+        {"input": "clarooo tia jo pero yo debajo prq no puedes poner las piernas rectas...", "output": "Caroo txoo baie neu behien ze ezinzuz rekto imini hankak..."},
+        # remaining (used only with k > 15)
+        {"input": "me lo he encontradooo es muy top",                                         "output": "Topaa doott  es muuuy top"},
+        {"input": "ella tampoco las tiene rectas eh",                                         "output": "Berak be eztakoz rektoo"},
         {"input": "a ver si le conocemos en alguna juerga",                                   "output": "Abeer juerganbaten ezautzen deun"},
         {"input": "ajjajaja ya ya tampoco tengo tan mal gusto jajajaj",                       "output": "Ajjajaja ya ya....  Eztakot hain gusto txarra jajajaj"},
         {"input": "buenooo... tus gustos...",                                                 "output": "Buenooo.... zure gustok..."},
-        {"input": "no t pasesssss",                                                           "output": "ez pasaa"},
-        {"input": "anda ya pelmada!! Lo de mañana es gratis?",                               "output": "Bai zera pelmada!! Doan da biharkoa?"},
-        {"input": "ei a londres otra vez?? joe q bien viven algunos",                         "output": "E Londresera berriro??joe q bien viven algunos"},
     ]
     retriever_fn_step0 = lambda query, k: dev_examples[:k]
 
@@ -97,7 +100,6 @@ def run_one_step(exp_cfg: dict, prompts_cfg: dict, k: int):
 
     hypotheses = translate_batch(source_texts, pipeline.translate_informal_spanish_to_informal_basque, k)
 
-    print(f"DEBUG: {hypotheses}, {references}")
     save_outputs(hypotheses, references, "one_step", k, OUTPUTS_DIR)
     score = evaluate_file(str(OUTPUTS_DIR / f"one_step_{k}-shot_hypotheses.txt"), str(OUTPUTS_DIR / "references.txt"))
     (OUTPUTS_DIR / f"one_step_{k}-shot_scores.json").write_text(
