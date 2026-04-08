@@ -37,14 +37,14 @@ def load_tsv(path: str | Path) -> list[Sample]:
 
 def format_few_shot_examples(
     examples: list[dict],
+    header: str,
     src_key: str = "input",
     tgt_key: str = "output",
 ) -> str:
     """
-    Format a list of example dicts into a few-shot block string.
+    Format a list of example dicts into a few-shot block string, including the header.
 
-    Each dict must contain `src_key` and `tgt_key`.
-    Returns an empty string when examples is empty.
+    Returns an empty string when examples is empty (header is suppressed too).
     """
     if not examples:
         return ""
@@ -55,14 +55,14 @@ def format_few_shot_examples(
         tgt = ex.get(tgt_key, "")
         blocks.append(f'### Input\n{src}\n\n### Output\n{{"translation": "{tgt}"}}')
 
-    return "\n\n".join(blocks)
+    return header + "\n\n" + "\n\n".join(blocks) + "\n\n"
 
 
-def build_prompt(tokenizer, system, user_template:str, source_text: str,
-                             examples: list[dict]) -> str:
-    few_shot_examples = format_few_shot_examples(examples)
+def build_prompt(tokenizer, system, user_template: str, source_text: str,
+                 examples: list[dict], examples_header: str = "") -> str:
+    few_shot_block = format_few_shot_examples(examples, header=examples_header)
     user_content = user_template.format(
-        few_shot_examples=few_shot_examples,
+        few_shot_block=few_shot_block,
         source=source_text)
     messages = [
         {"role": "system", "content": system},
@@ -99,16 +99,12 @@ def parse_output(raw: str) -> str:
 _prompt_printed = False
 
 def translate(source_text: str, k: int, retriever_fn, tokenizer, prompt_config: dict, gen_config, model) -> str:
-    global _prompt_printed
     examples = retriever_fn(source_text, k)
     system = prompt_config["system"]
     user_template = prompt_config["user_template"]
+    examples_header = prompt_config.get("examples_header", "")
 
-    prompt = build_prompt(
-        tokenizer, system, user_template, source_text, examples)
-    if not _prompt_printed:
-        print(f"DEBUG first prompt:\n{prompt}\n--- END PROMPT ---")
-        _prompt_printed = True
+    prompt = build_prompt(tokenizer, system, user_template, source_text, examples, examples_header)
     raw = generate(
         tokenizer, model, prompt,
         max_new_tokens=gen_config.get("max_new_tokens", 256),
