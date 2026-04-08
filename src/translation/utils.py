@@ -67,7 +67,7 @@ def build_prompt(tokenizer, system, user_template:str, source_text: str,
     messages = [
         {"role": "system", "content": system},
         {"role": "user",   "content": user_content}]
-    return tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+    return tokenizer.apply_chat_template(messages, tokenize=False, chat_template="instruct", add_generation_prompt=True)
 
 def generate(tokenizer, model, prompt: str, max_new_tokens: int = 256,
              temperature: float = 0.1, do_sample: bool = False) -> str:
