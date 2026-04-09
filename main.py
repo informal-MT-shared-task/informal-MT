@@ -18,6 +18,7 @@ from src.translation.utils import load_tsv, translate_batch
 from src.translation.pipeline import InformalSpanishToInformalBasque, MultiStepApproach
 from src.translation.llm import load_latxa, load_llama3
 from src.evaluation.metrics import evaluate_file
+from src.rag.retriever import load_encoder, load_retriever_fn
 from utils import load_configs, save_outputs
 
 OUTPUTS_DIR = Path("outputs")
