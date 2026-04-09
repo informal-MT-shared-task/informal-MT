@@ -11,7 +11,7 @@ one_step:
   examples_header: "Hona hemen adibide batzuk:"
   user_template: |
     {few_shot_block}Gaztelaniazko mezu informal hau euskara informalera itzuli.
-    JSONekin bakarrik erantzun: {{"itzulpena": "..."}
+    JSONekin bakarrik erantzun: {{"itzulpena": "..."}}
 
     ### Input
     {source}

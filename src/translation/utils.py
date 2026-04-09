@@ -68,7 +68,7 @@ def build_prompt(tokenizer, system, user_template: str, source_text: str,
         {"role": "system", "content": system},
         {"role": "user",   "content": user_content}]
     prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-    return prompt + '{"translation": "'
+    return prompt + '{"itzulpena": "'
 
 def generate(tokenizer, model, prompt: str, max_new_tokens: int = 256,
              temperature: float = 0.1, do_sample: bool = False) -> str:
@@ -91,18 +91,18 @@ def generate(tokenizer, model, prompt: str, max_new_tokens: int = 256,
 def parse_output(raw: str) -> str:
     """Extract the translation from the model's JSON output.
     Handles both full JSON responses and continuations (when the prompt already
-    starts with '{"translation": "' and the model just completes the string).
+    starts with '{"itzulpena": "' and the model just completes the string).
     Falls back to the raw string if parsing fails."""
     try:
-        return json.loads(raw)["translation"]
+        data = json.loads(raw)
+        return data.get("itzulpena") or data.get("translation") or raw.strip()
     except Exception:
         pass
-    # Try treating raw as the completion of '{"translation": "'
+    # Try treating raw as the completion of '{"itzulpena": "'
     try:
-        completed = '{"translation": "' + raw
-        # Find the closing quote+brace, ignoring anything after
+        completed = '{"itzulpena": "' + raw
         end = completed.index('"}')
-        return json.loads(completed[:end + 2])["translation"]
+        return json.loads(completed[:end + 2])["itzulpena"]
     except Exception:
         return raw.strip()
 

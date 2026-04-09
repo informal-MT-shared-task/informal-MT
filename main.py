@@ -21,7 +21,7 @@ from src.evaluation.metrics import evaluate_file
 from utils import load_configs, save_outputs
 
 OUTPUTS_DIR = Path("outputs")
-PROMPTS_YAML = Path("config/prompts.yaml")
+PROMPTS_YAML = Path("config/prompts_euskera.yaml")
 EXPERIMENT_CONFIG_YAML = Path("config/experiment_config.yaml")
 
 
