@@ -42,19 +42,20 @@ print("Saved data/index_step0.faiss")
 # Using Ref-Batua-Basque as the target. The input side (standard Spanish)
 # should ideally come from backtranslated data so it's blocked now.
 # ------------------------------------------------------------------
-examples_step2 = [
-    {"input": s.ref_formal_eu, "output": s.ref_formal_eu}  # update input to normalized_es when available
-    for s in samples
-]
-index_step2 = build_index(examples_step2, encoder)
-faiss.write_index(index_step2, "data/index_step2.faiss")
-print("Saved data/index_step2.faiss")
+# examples_step2 = [
+#     {"input": s.normalized_es, "output": s.ref_formal_eu}  # update input to normalized_es when available
+#     for s in samples
+# ]
+# index_step2 = build_index(examples_step2, encoder)
+# faiss.write_index(index_step2, "data/index_step2.faiss")
+# print("Saved data/index_step2.faiss")
 
-# Step 3 — style injection: standard Basque → informal Basque
-examples_step3 = [
-    {"input": s.ref_formal_eu, "output": s.ref_informal_eu}
-    for s in samples
-]
-index_step3 = build_index(examples_step3, encoder)
-faiss.write_index(index_step3, "data/index_step3.faiss")
-print("Saved data/index_step3.faiss")
+# # Step 3 — style injection: standard Basque → informal Basque
+# ------------------------------------------------------------------
+# examples_step3 = [
+#     {"input": s.ref_formal_eu, "output": s.ref_informal_eu}
+#     for s in samples
+# ]
+# index_step3 = build_index(examples_step3, encoder)
+# faiss.write_index(index_step3, "data/index_step3.faiss")
+# print("Saved data/index_step3.faiss")
