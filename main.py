@@ -59,39 +59,45 @@ def run_one_step(exp_cfg: dict, prompts_cfg: dict, k: int):
     else:
         tokenizer, model = load_llama3()
 
-    # TODO: replace with real RAG retriever once build_index/retrieve are implemented
-    # All examples from train.tsv — no overlap with test
-    dev_examples = [
-        # --- targeted: question preservation ---
-        {"input": "tu pq ??",                                                                 "output": "Zuk zeba ??"},
-        {"input": "como lo sabeees?? yo tengo turno  luego a las 9 ehh",                     "output": "Zelan dakizu!!? nik gero 9tan dakot turnue"},
-        {"input": "madreeeee q miedo... q estais haciendo???",                               "output": "Amaaaa ze bildurre...zertan zaizte???"},
-        # --- targeted: no hallucination ---
-        {"input": "pero estoy con alain y en nada se va",                                    "output": "Baina alainekin nago ta laister jungo da"},
-        {"input": "no puedo escuchar estoy en la biblioteca",                                "output": "Ezin dut entzun liburutegian naiiiz"},
-        # --- targeted: simple informal correctness ---
-        {"input": "siiiii es buena ideaaa",                                                  "output": "Baiiii ideia ona daaaa"},
-        {"input": "conseguidooo",                                                            "output": "Lortu duuut"},
-        # --- phonetic elongation ---
-        {"input": "yaaa jajajaj ya te dije",                                                 "output": "Yaaa jajajaj esantzutenn"},
-        {"input": "A ver que pasaaaaaaa",                                                    "output": "Ea zer gertatzen deeeeen"},
-        # --- code-switching preserved ---
-        {"input": "no te pega llorar",                                                       "output": "No te pega negar iteaa"},
-        {"input": "eii menos con ane",                                                       "output": "Eii menos anetxokin"},
-        {"input": "buenooo... tus gustos...",                                                "output": "Buenooo.... zure gustok..."},
-        {"input": "El lunes tenemos q hacer terapia q estoy fatall",                         "output": "Astelehenenn terapia in behar deuu que estoy fatall"},
-        # --- dialect + phonetic ---
-        {"input": "ella tampoco las tiene rectas eh",                                        "output": "Berak be eztakoz rektoo"},
-        {"input": "a ver si le conocemos en alguna juerga",                                  "output": "Abeer juerganbaten ezautzen deun"},
-        # --- informal lexic ---
-        {"input": "es q es un poco tontillo no se enterara!",                               "output": "Esk tonto xamarra da eztaa kontuauko!"},
-        {"input": "ahora voy a comer y luego siestita y libre",                              "output": "Nik orain bazkalduko dut ta gero siesta pixkat ta libreee"},
-        # --- remaining (used only with k > 15) ---
-        {"input": "tio araan entre esto y los bertsos de tu abu me emociono mogollon!!",     "output": "Tioo araan hau ta zure aitonan bertsokin mordoa emozionatzen naiz!??"},
-        {"input": "ajjajaja ya ya tampoco tengo tan mal gusto jajajaj",                      "output": "Ajjajaja ya ya....  Eztakot hain gusto txarra jajajaj"},
-        {"input": "waaaa es en tu casa??",                                                   "output": "Waaaa zure etxean da??"},
-    ]
-    retriever_fn_step0 = lambda query, k: dev_examples[:k]
+    # # TODO: replace with real RAG retriever once build_index/retrieve are implemented
+    # # All examples from train.tsv — no overlap with test
+    # dev_examples = [
+    #     # --- targeted: question preservation ---
+    #     {"input": "tu pq ??",                                                                 "output": "Zuk zeba ??"},
+    #     {"input": "como lo sabeees?? yo tengo turno  luego a las 9 ehh",                     "output": "Zelan dakizu!!? nik gero 9tan dakot turnue"},
+    #     {"input": "madreeeee q miedo... q estais haciendo???",                               "output": "Amaaaa ze bildurre...zertan zaizte???"},
+    #     # --- targeted: no hallucination ---
+    #     {"input": "pero estoy con alain y en nada se va",                                    "output": "Baina alainekin nago ta laister jungo da"},
+    #     {"input": "no puedo escuchar estoy en la biblioteca",                                "output": "Ezin dut entzun liburutegian naiiiz"},
+    #     # --- targeted: simple informal correctness ---
+    #     {"input": "siiiii es buena ideaaa",                                                  "output": "Baiiii ideia ona daaaa"},
+    #     {"input": "conseguidooo",                                                            "output": "Lortu duuut"},
+    #     # --- phonetic elongation ---
+    #     {"input": "yaaa jajajaj ya te dije",                                                 "output": "Yaaa jajajaj esantzutenn"},
+    #     {"input": "A ver que pasaaaaaaa",                                                    "output": "Ea zer gertatzen deeeeen"},
+    #     # --- code-switching preserved ---
+    #     {"input": "no te pega llorar",                                                       "output": "No te pega negar iteaa"},
+    #     {"input": "eii menos con ane",                                                       "output": "Eii menos anetxokin"},
+    #     {"input": "buenooo... tus gustos...",                                                "output": "Buenooo.... zure gustok..."},
+    #     {"input": "El lunes tenemos q hacer terapia q estoy fatall",                         "output": "Astelehenenn terapia in behar deuu que estoy fatall"},
+    #     # --- dialect + phonetic ---
+    #     {"input": "ella tampoco las tiene rectas eh",                                        "output": "Berak be eztakoz rektoo"},
+    #     {"input": "a ver si le conocemos en alguna juerga",                                  "output": "Abeer juerganbaten ezautzen deun"},
+    #     # --- informal lexic ---
+    #     {"input": "es q es un poco tontillo no se enterara!",                               "output": "Esk tonto xamarra da eztaa kontuauko!"},
+    #     {"input": "ahora voy a comer y luego siestita y libre",                              "output": "Nik orain bazkalduko dut ta gero siesta pixkat ta libreee"},
+    #     # --- remaining (used only with k > 15) ---
+    #     {"input": "tio araan entre esto y los bertsos de tu abu me emociono mogollon!!",     "output": "Tioo araan hau ta zure aitonan bertsokin mordoa emozionatzen naiz!??"},
+    #     {"input": "ajjajaja ya ya tampoco tengo tan mal gusto jajajaj",                      "output": "Ajjajaja ya ya....  Eztakot hain gusto txarra jajajaj"},
+    #     {"input": "waaaa es en tu casa??",                                                   "output": "Waaaa zure etxean da??"},
+    # ]
+    print("Loading encoder and retriever ...")
+    
+    encoder = load_encoder()
+    samples = load_tsv(exp_cfg["data"]["tsv_path"])
+    examples_step0 = [{"input": s.source_es, "output": s.ref_informal_eu} for s in samples]
+    retriever_fn_step0 = load_retriever_fn("data/index_step0.faiss", examples_step0, encoder)
+    # retriever_fn_step0 = lambda query, k: dev_examples[:k]
 
     pipeline = InformalSpanishToInformalBasque(tokenizer, model, retriever_fn_step0, cfg, prompts_cfg)
 
@@ -110,21 +116,37 @@ def run_one_step(exp_cfg: dict, prompts_cfg: dict, k: int):
 def run_multi_step(exp_cfg: dict, prompts_cfg: dict, k: int):
     cfg = exp_cfg["multi_step"]
     test = load_tsv(exp_cfg["data"]["test_tsv_path"])
-
+ 
     print(f"Test set size: {len(test)}")
     print("Loading models ...")
-
+ 
     norm_tokenizer, norm_model = load_llama3()   # Step 1
     mt_tokenizer, mt_model = load_latxa()        # Steps 2 & 3
+ 
+    print("Loading encoder and retrievers ...")
+    encoder = load_encoder()
+ 
+    # Step 1 — normalization: informal ES → standard ES  (needs dataset_augmented.tsv)
+    samples_aug = load_tsv(exp_cfg["data"]["augmented_tsv_path"])
+    examples_step1 = [{"input": s.source_es,    "output": s.normalized_es}   for s in samples_aug]
+    examples_step2 = [{"input": s.normalized_es, "output": s.ref_formal_eu}  for s in samples_aug]
+    retriever_fn_step1 = load_retriever_fn("data/index_step1.faiss", examples_step1, encoder)
+    retriever_fn_step2 = load_retriever_fn("data/index_step2.faiss", examples_step2, encoder)
+ 
+    # Step 3 — style injection: standard EU → informal EU  (main dataset)
+    samples = load_tsv(exp_cfg["data"]["tsv_path"])
+    examples_step3 = [{"input": s.ref_formal_eu, "output": s.ref_informal_eu} for s in samples]
+    retriever_fn_step3 = load_retriever_fn("data/index_step3.faiss", examples_step3, encoder)
 
-    # TODO: replace these with real examples and a real encoder, one pool per step
-    # encoder = SentenceTransformer("paraphrase-multilingual-mpnet-base-v2")
-    # index_step1 = build_index(examples_step1, encoder)
-    # retriever_fn_step1 = lambda query, k: retrieve(query, k, index_step1, examples_step1, encoder)
-    # (same for step2 and step3)
-    retriever_fn_step1 = lambda query, k: []  # placeholder
-    retriever_fn_step2 = lambda query, k: []  # placeholder
-    retriever_fn_step3 = lambda query, k: []  # placeholder
+
+    # # TODO: replace these with real examples and a real encoder, one pool per step
+    # # encoder = SentenceTransformer("paraphrase-multilingual-mpnet-base-v2")
+    # # index_step1 = build_index(examples_step1, encoder)
+    # # retriever_fn_step1 = lambda query, k: retrieve(query, k, index_step1, examples_step1, encoder)
+    # # (same for step2 and step3)
+    # retriever_fn_step1 = lambda query, k: []  # placeholder
+    # retriever_fn_step2 = lambda query, k: []  # placeholder
+    # retriever_fn_step3 = lambda query, k: []  # placeholder
 
     pipeline = MultiStepApproach(
         norm_tokenizer, norm_model,
