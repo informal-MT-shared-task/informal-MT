@@ -90,22 +90,55 @@ def generate(tokenizer, model, prompt: str, max_new_tokens: int = 256,
     new_tokens = output_ids[0][input_len:]
     return tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
 
-def parse_output(raw: str) -> str:
+def _get_loop_caps(source: str) -> tuple[int, int]:
+    """Derive repetition caps from the source sentence.
+    - max_char_run: longest single-character run in source (min 4 to allow basic elongation)
+    - max_word_repeats: longest consecutive word repeat in source (min 2 to allow natural pairs)
+    """
+    import re
+    char_runs = re.findall(r'(.)\1+', source)
+    max_char_run = max((len(r) + 1 for r in char_runs), default=1)
+    max_char_run = max(max_char_run, 4)
+
+    words = source.lower().split()
+    max_word_repeats = 1
+    current = 1
+    for i in range(1, len(words)):
+        if words[i] == words[i - 1]:
+            current += 1
+            max_word_repeats = max(max_word_repeats, current)
+        else:
+            current = 1
+    max_word_repeats = max(max_word_repeats, 2)
+
+    return max_char_run, max_word_repeats
+
+
+def _truncate_loops(text: str, max_char_run: int, max_word_repeats: int) -> str:
+    """Cap character runs and word repetitions in model output."""
+    import re
+    text = re.sub(r'(.)\1{' + str(max_char_run) + r',}', lambda m: m.group(1) * max_char_run, text)
+    text = re.sub(r'\b(\w+)(\s+\1){' + str(max_word_repeats) + r',}', lambda m: ' '.join([m.group(1)] * max_word_repeats), text)
+    return text.strip()
+
+
+def parse_output(raw: str, source: str = "") -> str:
     """Extract the translation from the model's JSON output.
     Handles both full JSON responses and continuations (when the prompt already
     starts with '{"translation": "' and the model just completes the string).
+    Truncates repetition loops using caps derived from the source sentence.
     Falls back to the raw string if parsing fails."""
+    max_char_run, max_word_repeats = _get_loop_caps(source)
     try:
-        return json.loads(raw)["translation"]
+        return _truncate_loops(json.loads(raw)["translation"], max_char_run, max_word_repeats)
     except Exception:
         pass
-    # Try treating raw as the completion of '{"translation": "'
     try:
         completed = '{"translation": "' + raw
         end = completed.index('"}')
-        return json.loads(completed[:end + 2])["translation"]
+        return _truncate_loops(json.loads(completed[:end + 2])["translation"], max_char_run, max_word_repeats)
     except Exception:
-        return raw.strip()
+        return _truncate_loops(raw.strip(), max_char_run, max_word_repeats)
 
 
 _prompt_printed = False
@@ -124,7 +157,7 @@ def translate(source_text: str, k: int, retriever_fn, tokenizer, prompt_config: 
         do_sample=gen_config.get("do_sample", False),
         repetition_penalty=gen_config.get("repetition_penalty", 1.0),
     )
-    return parse_output(raw)
+    return parse_output(raw, source=source_text)
 
 def translate_batch(source_texts: list[str], translate_function, k: int) -> list[str]:
     return [translate_function(t, k) for t in tqdm(source_texts, desc="Translating...")]
