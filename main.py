@@ -62,34 +62,32 @@ def run_one_step(exp_cfg: dict, prompts_cfg: dict, k: int):
     # TODO: replace with real RAG retriever once build_index/retrieve are implemented
     # Hardcoded dev examples — diverse set covering phonetic elongation, abbreviations,
     # code-switching, informal terms, and laughter particles
+    # All examples from train.tsv — no overlap with test
     dev_examples = [
-        # phonetic elongation
-        {"input": "siiiiiiiiii hasta el 31...",                                               "output": "Baiiii 31arte..."},
-        {"input": "ensegidaaaaaaaaaaaa",                                                      "output": "Lasteer lasteerr"},
-        {"input": "rarooooooo",                                                               "output": "Arrarooaaa"},
-        {"input": "madreeeee asii",                                                           "output": "Aiamaaa asii"},
-        # abbreviations
-        {"input": "yo tb ehh!! y alli no puedes ir a un psicologo?",                         "output": "Nik ere eee!! Ta han ezin duzu psikologorik ikusi?"},
-        {"input": "no t pasesssss",                                                           "output": "ez pasaa"},
-        # code-switching — Spanish words kept as-is
-        {"input": "bon en octubre nos tomamos algo!",                                         "output": "Bon urrian trago bat edaten dugu!"},
-        {"input": "me ha invitado y no podia decirle q no jajaja",                            "output": "Gomitatu nau ta ezin nion ezetz esan jajaja"},
-        {"input": "El lunes tenemos q hacer terapia q estoy fatall",                          "output": "Astelehenenn terapia in behar deuu que estoy fatall"},
-        {"input": "ei a londres otra vez?? joe q bien viven algunos",                         "output": "E Londresera berriro??joe q bien viven algunos"},
-        # code-switching + phonetic combined
-        {"input": "he cotilleado y ahora esta super guapooo",                                 "output": "Cotillie dot, orain super guapue daaa"},
-        {"input": "sii fijo en alguna fiesta",                                                "output": "Baai, jairen baten fijoo"},
-        # informal lexic
-        {"input": "gracias cari",                                                             "output": "Milesker maitia"},
-        {"input": "anda ya pelmada!! Lo de mañana es gratis?",                               "output": "Bai zera pelmada!! Doan da biharkoa?"},
-        # dialect + phonetic
-        {"input": "clarooo tia jo pero yo debajo prq no puedes poner las piernas rectas...", "output": "Caroo txoo baie neu behien ze ezinzuz rekto imini hankak..."},
-        # remaining (used only with k > 15)
-        {"input": "me lo he encontradooo es muy top",                                         "output": "Topaa doott  es muuuy top"},
+        # phonetic + code-switching (score 4)
+        {"input": "aufaaait!! igual hemos pillado por fin el piso con louis estamos esperando respuesta de la agencia", "output": "Aufaaaait !! Beharba atxeman dugu aparta Louisrekin agentziaren erantzuna goitatzen dugu"},
+        # phonetic + dialect + code-switching
+        {"input": "yaaa jajajaj ya te dije",                                                  "output": "Yaaa jajajaj esantzutenn"},
+        {"input": "no te pega llorar",                                                        "output": "No te pega negar iteaa"},
         {"input": "ella tampoco las tiene rectas eh",                                         "output": "Berak be eztakoz rektoo"},
-        {"input": "a ver si le conocemos en alguna juerga",                                   "output": "Abeer juerganbaten ezautzen deun"},
-        {"input": "ajjajaja ya ya tampoco tengo tan mal gusto jajajaj",                       "output": "Ajjajaja ya ya....  Eztakot hain gusto txarra jajajaj"},
+        {"input": "eii menos con ane",                                                        "output": "Eii menos anetxokin"},
+        {"input": "como lo sabeees?? yo tengo turno  luego a las 9 ehh",                     "output": "Zelan dakizu!!? nik gero 9tan dakot turnue"},
         {"input": "buenooo... tus gustos...",                                                 "output": "Buenooo.... zure gustok..."},
+        {"input": "a ver si le conocemos en alguna juerga",                                   "output": "Abeer juerganbaten ezautzen deun"},
+        {"input": "El lunes tenemos q hacer terapia q estoy fatall",                          "output": "Astelehenenn terapia in behar deuu que estoy fatall"},
+        # informal lexic + dialect
+        {"input": "pero me parece un tipazo eh ajajajaj",                                     "output": "Baño kriston tipo earra iruitzezait ajajajajaja"},
+        {"input": "madreeeee q miedo... q estais haciendo???",                                "output": "Amaaaa ze bildurre...zertan zaizte???"},
+        {"input": "holissss acabo de leer los mensajes ahora perdon",                         "output": "Epii, auntzek irakurri dotez mezuek, parkatu"},
+        {"input": "jajaja super super bien muy guay",                                         "output": "Hahaah oso oso ondo egonda oso politxee"},
+        {"input": "es q es un poco tontillo no se enterara!",                                 "output": "Esk tonto xamarra da eztaa kontuauko!"},
+        {"input": "ahora voy a comer y luego siestita y libre",                               "output": "Nik orain bazkalduko dut ta gero siesta pixkat ta libreee"},
+        # remaining (used only with k > 15)
+        {"input": "se acuerda d vosotros al vr sto?? Conversciones profundas ajajjajaja",    "output": "hau ikusi ta zuetaz guatzea?? konbersazio sakonak ajajjajaja"},
+        {"input": "tio araan entre esto y los bertsos de tu abu me emociono mogollon!!",      "output": "Tioo araan hau ta zure aitonan bertsokin mordoa emozionatzen naiz!??"},
+        {"input": "ajjajaja ya ya tampoco tengo tan mal gusto jajajaj",                       "output": "Ajjajaja ya ya....  Eztakot hain gusto txarra jajajaj"},
+        {"input": "Jooo pues ahora t paso",                                                   "output": "Jooo ba ointxe pasaukotzuut"},
+        {"input": "hay mas gafes que Helene",                                                 "output": "Helene baño gafegook exixtitzen diela"},
     ]
     retriever_fn_step0 = lambda query, k: dev_examples[:k]
 
