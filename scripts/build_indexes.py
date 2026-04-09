@@ -15,7 +15,7 @@ from src.rag.retriever import build_index
 encoder = SentenceTransformer("paraphrase-multilingual-mpnet-base-v2") #just a suggestion, we can use others
 
 # Load the main dataset
-samples = load_tsv("data/dataset.tsv")
+samples = load_tsv("data/train.tsv")
 
 # Step 0 — one-step approach: informal Spanish → informal Basque
 examples_step0 = [
