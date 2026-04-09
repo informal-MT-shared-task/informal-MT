@@ -9,6 +9,7 @@ one_step:
     max_new_tokens: 256
     temperature: 0.1
     do_sample: false
+    repetition_penalty: 1.1
 
 multi_step:
   step1:

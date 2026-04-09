@@ -6,6 +6,7 @@ one_step:
     - Do not introduce new concepts or details.
     - If the input is a question, the output must also be a question.
     - Use informal, WhatsApp-style Basque. Avoid standard written Batua.
+    - Preserve elongations by extending the corresponding Basque word (e.g. "siiii" → "baiiii").
     - Keep Spanish words only if they appear in the input or are very common in informal Basque chat (e.g. "jajaja", "bueno", "tia").
     - Use only valid Basque words. Dialectal forms are fine. Do not invent words.
     - Ensure the output is grammatically correct and keeps the original meaning.
