@@ -3,9 +3,18 @@ Entry point.
 
 Usage examples:
     python main.py --approach one_step --k 5
-    python main.py --approach multi_step --k 3
+    python main.py --approach one_step --k 15 --retrieval-strategy phenomena
+    python main.py --approach one_step --k 15 --retrieval-strategy faiss
+    python main.py --approach one_step --k 15 --retrieval-strategy random
     python main.py --approach one_step --eval-only --k 5
     python main.py --approach one_step --config config/experiment_config.yaml
+
+Retrieval strategies (--retrieval-strategy):
+    hardcoded   — curated fixed examples (default when flag is omitted)
+    random      — random sample from train pool
+    phenomena   — PhenomenaRetriever: fixed anchor examples + dynamic slots by
+                  detected informality phenomena (elongation, informal lexical)
+    faiss       — semantic nearest-neighbour search via FAISS index
 """
 
 import argparse
@@ -19,6 +28,7 @@ from src.translation.pipeline import InformalSpanishToInformalBasque, MultiStepA
 from src.translation.llm import load_latxa, load_llama3
 from src.evaluation.metrics import evaluate_file
 from src.rag.retriever import load_encoder, load_retriever_fn
+from src.rag.engine import PhenomenaRetriever
 from utils import load_configs, save_outputs
 
 OUTPUTS_DIR = Path("outputs")
@@ -48,26 +58,43 @@ def run_eval_only(k: int):
     )
 
 
-def run_one_step(exp_cfg: dict, prompts_cfg: dict, k: int, use_rag: bool = False):
+def run_one_step(exp_cfg: dict, prompts_cfg: dict, k: int, retrieval_strategy: str = None):
     cfg = exp_cfg["one_step"]
     test = load_tsv(exp_cfg["data"]["test_tsv_path"])
 
+    # Resolve strategy: CLI arg > config > default "hardcoded"
+    strategy = retrieval_strategy or exp_cfg.get("rag", {}).get("strategy", "hardcoded")
+
     print(f"Test set size: {len(test)}")
     print(f"Loading model: {cfg['model']} ...")
+    print(f"Retrieval strategy: {strategy}")
 
     if cfg["model"] == "latxa":
         tokenizer, model = load_latxa()
     else:
         tokenizer, model = load_llama3()
 
-    if use_rag:
-        print("Loading encoder and retriever ...")
+    if strategy == "faiss":
+        print("Loading encoder and FAISS retriever ...")
         encoder = load_encoder()
         samples = load_tsv(exp_cfg["data"]["tsv_path"])
         examples_step0 = [{"input": s.source_es, "output": s.ref_informal_eu} for s in samples]
         retriever_fn_step0 = load_retriever_fn("data/index_step0.faiss", examples_step0, encoder)
-    else:
-        # Hardcoded examples from train.tsv — no overlap with test
+
+    elif strategy == "phenomena":
+        print("Loading encoder and PhenomenaRetriever ...")
+        samples = load_tsv(exp_cfg["data"]["tsv_path"])
+        retriever = PhenomenaRetriever(samples, exp_cfg["rag"])
+        retriever_fn_step0 = retriever.as_retriever_fn()
+
+    elif strategy == "random":
+        import random as _random
+        samples = load_tsv(exp_cfg["data"]["tsv_path"])
+        examples_step0 = [{"input": s.source_es, "output": s.ref_informal_eu} for s in samples]
+        retriever_fn_step0 = lambda query, k: _random.sample(examples_step0, min(k, len(examples_step0)))
+
+    else:  # "hardcoded" (default)
+        # Curated examples from train.tsv — no overlap with test
         # Selected for diversity: question preservation, no hallucination, phonetic elongation,
         # code-switching, dialect features, informal lexic
         hardcoded_examples = [
@@ -179,8 +206,12 @@ def main():
                         help="Path to experiment_config.yaml")
     parser.add_argument("--eval-only", action="store_true",
                         help="Skip translation; just (re)score saved hypotheses")
-    parser.add_argument("--rag", action="store_true",
-                        help="Use FAISS retriever instead of hardcoded examples")
+    parser.add_argument("--retrieval-strategy", choices=["hardcoded", "random", "phenomena", "faiss"],
+                        default=None,
+                        help="Few-shot retrieval strategy. Overrides config value. "
+                             "Options: hardcoded (curated fixed list), random (random sample), "
+                             "phenomena (PhenomenaRetriever), faiss (semantic FAISS search). "
+                             "Default: value from experiment_config.yaml, or 'hardcoded'.")
     args = parser.parse_args()
 
     if args.eval_only:
@@ -190,9 +221,9 @@ def main():
     exp_cfg, prompts_cfg = load_configs(args.config, PROMPTS_YAML)
 
     if args.approach == "one_step":
-        run_one_step(exp_cfg, prompts_cfg, args.k, use_rag=args.rag)
+        run_one_step(exp_cfg, prompts_cfg, args.k, retrieval_strategy=args.retrieval_strategy)
     else:
-        run_multi_step(exp_cfg, prompts_cfg, args.k, use_rag=args.rag)
+        run_multi_step(exp_cfg, prompts_cfg, args.k, use_rag=args.retrieval_strategy == "faiss")
 
 
 if __name__ == "__main__":

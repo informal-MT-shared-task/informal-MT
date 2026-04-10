@@ -2,6 +2,11 @@ data:
   tsv_path: "data/train.tsv"       # few-shot retrieval pool (used by build_indexes.py)
   test_tsv_path: "data/test.tsv"     # held-out test set (used by main.py)
 
+rag:
+  strategy: "phenomena"             # "random" | "phenomena" | "faiss"
+  n_examples: 12                    # max examples retrieved; set up to 20 for larger models
+  hardcoded_example_indices: [78, 87, 56, 3, 1, 20, 101, 116, 52, 17, 90, 66, 6, 9, 27, 29, 111, 81, 61, 26]     # at least 3 required (fixed anchors); provide more for fallback slots
+
 one_step:
   model: "latxa"          # "latxa" or "llama3"
   ref_column: "ref_informal_eu"   # Sample field used as eval reference
