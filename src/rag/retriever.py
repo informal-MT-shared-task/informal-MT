@@ -104,3 +104,7 @@ def load_retriever_fn(
     """
     index = faiss.read_index(str(index_path))
     return make_retriever_fn(index, examples, encoder)
+
+
+
+
