@@ -52,9 +52,9 @@ def run_eval_only(k: int):
     ref_file = OUTPUTS_DIR / "references.txt"
     if not ref_file.exists():
         raise FileNotFoundError("references.txt not found. Run translation first (without --eval-only).")
-    score = evaluate_file(str(hyp_file), str(ref_file))
+    scores = evaluate_file(str(hyp_file), str(ref_file))
     (OUTPUTS_DIR / f"{approach}_{k}-shot_scores.json").write_text(
-        json.dumps({"chrf++": score, "approach": approach, "k": k}, indent=2)
+    json.dumps({**scores, "approach": approach, "k": k}, indent=2)
     )
 
 
@@ -136,9 +136,9 @@ def run_one_step(exp_cfg: dict, prompts_cfg: dict, k: int, retrieval_strategy: s
     hypotheses = translate_batch(source_texts, pipeline.translate_informal_spanish_to_informal_basque, k)
 
     save_outputs(hypotheses, references, "one_step", k, OUTPUTS_DIR)
-    score = evaluate_file(str(OUTPUTS_DIR / f"one_step_{k}-shot_hypotheses.txt"), str(OUTPUTS_DIR / "references.txt"))
+    scores = evaluate_file(str(OUTPUTS_DIR / f"one_step_{k}-shot_hypotheses.txt"), str(OUTPUTS_DIR / "references.txt"))
     (OUTPUTS_DIR / f"one_step_{k}-shot_scores.json").write_text(
-        json.dumps({"chrf++": score, "approach": "one_step", "k": k}, indent=2)
+    json.dumps({**scores, "approach": "one_step", "k": k}, indent=2)
     )
 
 
@@ -190,9 +190,9 @@ def run_multi_step(exp_cfg: dict, prompts_cfg: dict, k: int, use_rag: bool = Fal
     hypotheses = translate_batch(source_texts, pipeline.translate_multi_step, k)
 
     save_outputs(hypotheses, references, "multi_step", k, OUTPUTS_DIR)
-    score = evaluate_file(str(OUTPUTS_DIR / f"multi_step_{k}-shot_hypotheses.txt"), str(OUTPUTS_DIR / "references.txt"))
+    scores = evaluate_file(str(OUTPUTS_DIR / f"multi_step_{k}-shot_hypotheses.txt"), str(OUTPUTS_DIR / "references.txt"))
     (OUTPUTS_DIR / f"multi_step_{k}-shot_scores.json").write_text(
-        json.dumps({"chrf++": score, "approach": "multi_step", "k": k}, indent=2)
+    json.dumps({**scores, "approach": "multi_step", "k": k}, indent=2)
     )
 
 
