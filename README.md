@@ -47,7 +47,7 @@ python main.py --approach one_step --k 15
 
 Translates informal Spanish → informal Basque directly using Latxa 7B, with `k` few-shot examples per input. Saves hypotheses, references, and chrF++ score under `outputs/`.
 
-### Multi-step
+### Multi-step (not available at the moment)
 
 ```bash
 python main.py --approach multi_step --k 5
