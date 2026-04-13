@@ -58,7 +58,7 @@ def run_eval_only(k: int):
     )
 
 
-def run_one_step(exp_cfg: dict, prompts_cfg: dict, k: int, retrieval_strategy: str = None):
+def run_one_step(exp_cfg: dict, prompts_cfg: dict, k: int, retrieval_strategy: str = None, tag=""):
     cfg = exp_cfg["one_step"]
     test = load_tsv(exp_cfg["data"]["test_tsv_path"])
 
@@ -135,9 +135,11 @@ def run_one_step(exp_cfg: dict, prompts_cfg: dict, k: int, retrieval_strategy: s
 
     hypotheses = translate_batch(source_texts, pipeline.translate_informal_spanish_to_informal_basque, k)
 
-    save_outputs(hypotheses, references, "one_step", k, OUTPUTS_DIR)
-    scores = evaluate_file(str(OUTPUTS_DIR / f"one_step_{k}-shot_hypotheses.txt"), str(OUTPUTS_DIR / "references.txt"))
-    (OUTPUTS_DIR / f"one_step_{k}-shot_scores.json").write_text(
+    label = f"{tag}_{strategy}"
+
+    save_outputs(hypotheses, references, "one_step", k, OUTPUTS_DIR, tag=label)
+    scores = evaluate_file(str(OUTPUTS_DIR / f"one_step_{label}_{k}-shot_hypotheses.txt"), str(OUTPUTS_DIR / "references.txt"))
+    (OUTPUTS_DIR / f"one_step_{label}_{k}-shot_scores.json").write_text(
     json.dumps({**scores, "approach": "one_step", "k": k}, indent=2)
     )
 
@@ -212,6 +214,8 @@ def main():
                              "Options: hardcoded (curated fixed list), random (random sample), "
                              "phenomena (PhenomenaRetriever), faiss (semantic FAISS search). "
                              "Default: value from experiment_config.yaml, or 'hardcoded'.")
+    parser.add_argument("--tag", default="", help="Label for output files (e.g. model name)")
+
     args = parser.parse_args()
 
     if args.eval_only:
@@ -221,7 +225,7 @@ def main():
     exp_cfg, prompts_cfg = load_configs(args.config, PROMPTS_YAML)
 
     if args.approach == "one_step":
-        run_one_step(exp_cfg, prompts_cfg, args.k, retrieval_strategy=args.retrieval_strategy)
+        run_one_step(exp_cfg, prompts_cfg, args.k, retrieval_strategy=args.retrieval_strategy, tag=args.tag)
     else:
         run_multi_step(exp_cfg, prompts_cfg, args.k, use_rag=args.retrieval_strategy == "faiss")
 

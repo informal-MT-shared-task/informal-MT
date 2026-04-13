@@ -9,8 +9,8 @@ def load_configs(config_path: str, prompts_path):
     return exp_cfg, prompts_cfg 
 
 
-def save_outputs(hypotheses: list[str], references: list[str], approach: str, k: int, out_dir):
+def save_outputs(hypotheses: list[str], references: list[str], approach: str, k: int, out_dir, tag=""):
     out_dir.mkdir(parents=True, exist_ok=True)
     cleaned = [h.replace("\n", " ").strip() for h in hypotheses]
-    (out_dir / f"{approach}_{k}-shot_hypotheses.txt").write_text("\n".join(cleaned), encoding="utf-8")
+    (out_dir / f"{approach}_{tag}_{k}-shot_hypotheses.txt").write_text("\n".join(cleaned), encoding="utf-8")
     (out_dir / "references.txt").write_text("\n".join(references), encoding="utf-8")
